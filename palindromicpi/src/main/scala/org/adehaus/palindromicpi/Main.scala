@@ -31,6 +31,6 @@ object Main {
    * @return
    */
   def isPrime(n: Long) = {
-    ((2l to sqrt(n).toLong) filter (n % _ == 0)).size == 0
+    ((2l to sqrt(n).toLong) filter (n % _ == 0)).size == 0 // Use exist here, and optimise stream for 2, 3, 6k +/1 1
   }
 }
