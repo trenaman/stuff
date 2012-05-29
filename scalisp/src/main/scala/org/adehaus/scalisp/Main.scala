@@ -43,9 +43,13 @@ object Main extends LispParser {
     } else if (trimmedCmd.equals(":h")) {
       (0, helpMessage)
     } else {
-      val x: ParseResult[Any] = parseAll(sexpr, trimmedCmd)
+      val x: ParseResult[Lambda] = parseAll(sexpr, trimmedCmd)
 
-      val msg = if (x.successful) x.toString else "Parser error"
+      val msg = if (x.successful)
+        x.get.eval(EmptyEnvironment).asString
+      else
+        "Parser error"
+
       (0, msg)
     }
   }

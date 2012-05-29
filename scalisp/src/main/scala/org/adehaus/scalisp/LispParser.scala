@@ -4,14 +4,16 @@ import util.parsing.combinator._
 
 class LispParser extends JavaTokenParsers {
 
+  def sexpr: Parser[Lambda] = (
+      "("~"+"~>rep(atom)<~")"       ^^ { Addition(_) }
+    | "("~"defun"~>rep(atom)<~")"   ^^ { x => LongConstant(0l) }
+  )
 
-  def addition: Parser[Any] = "("~"+"~rep(atom)~")" ^^ {
-    case "("~"+"~atoms~")" => atoms.foldLeft(0)(0 + _.toLong)
-  }
-
-  def atom: Parser[Any] = (wholeNumber | decimalNumber | floatingPointNumber | sexpr )
-
-  // def atom: Parser[Any] = stringLiteral | decimalNumber | wholeNumber | floatingPointNumber | ident | sexpr
-//  def defun: Parser[Any] = "defun"~ident~sexpr
-//  def op: Parser[Any] = "+" | "-" | "*" | "/" | "%" | "or" | "and"
+  def atom: Parser[Lambda] = (
+        ident ^^ { x: String =>  Symbol(x) }
+      | wholeNumber ^^ { x: String => LongConstant(x.toLong) }
+      | floatingPointNumber ^^ { x: String => FloatConstant(x.toFloat) }
+      | stringLiteral ^^ { x: String => StringConstant(x.toString) }
+      | sexpr
+  )
 }
