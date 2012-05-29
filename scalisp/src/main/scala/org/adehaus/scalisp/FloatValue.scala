@@ -1,7 +1,8 @@
 package org.adehaus.scalisp
 
-case class FloatValue(val value: Float) extends Value {
-  def asFloat = value
-  def asLong = value.toLong
-  def asString = "%f".format(value)
+case class FloatValue(val value: Float) extends Sexpr {
+  override def asFloat = value
+  override def asLong = value.toLong
+  override def asString = "%f".format(value)
+  override def asBoolean = this.asLong == 1
 }

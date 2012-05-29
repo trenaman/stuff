@@ -1,9 +1,11 @@
 package org.adehaus.scalisp
 
-case class LongValue(value: Long) extends Value {
-  def asFloat = value.toFloat
+case class LongValue(value: Long) extends Sexpr {
+  override def asFloat = value.toFloat
 
-  def asLong = value
+  override def asLong = value
 
-  def asString = "%s".format(value)
+  override def asString = "%s".format(value)
+
+  override def asBoolean = value == 1
 }

@@ -6,14 +6,29 @@ class LispParser extends JavaTokenParsers {
 
   def sexpr: Parser[Sexpr] = (
       "("~"+"~>rep(atom)<~")"       ^^ { Addition(_) }
-    | "("~"defun"~>rep(atom)<~")"   ^^ { x => LongConstant(0l) }
+    | "("~"-"~>rep(atom)<~")"       ^^ { Subtraction(_) }
+    | "("~"and"~>rep(atom)<~")"     ^^ { And(_) }
+    | "("~"or"~>rep(atom)<~")"      ^^ { Or(_) }
+    | "("~"<"~>rep(atom)<~")"       ^^ { LessThan(_) }
+    | "("~">"~>rep(atom)<~")"       ^^ { GreaterThan(_) }
+    | "("~"set"~ident~atom~")"      ^^ {
+        case "("~"set"~symbol~expr~")" => SetValue(symbol, expr)
+      }
+    | "("~"defun"~ident~variable_list~atom~")" ^^ {
+        case "("~"defun"~name~vars~expr~")" => Defun(name, vars, expr)
+      }
+    | "("~ident~rep(atom)~")" ^^ {
+        case "("~f~params~")" => FunctionCall(f, params)
+      }
   )
 
   def atom: Parser[Sexpr] = (
         ident ^^ { x: String =>  Symbol(x) }
       | wholeNumber ^^ { x: String => LongConstant(x.toLong) }
-      | floatingPointNumber ^^ { x: String => FloatConstant(x.toFloat) }
+      | decimalNumber ^^ { x: String => FloatConstant(x.toFloat) }
       | stringLiteral ^^ { x: String => StringConstant(x.toString) }
       | sexpr
   )
+
+  def variable_list: Parser[List[String]] = "("~>rep(ident)<~")"
 }
