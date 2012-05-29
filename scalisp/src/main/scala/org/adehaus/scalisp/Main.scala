@@ -37,20 +37,18 @@ object Main extends LispParser {
   }
 
   def eval(cmd: String): (Int, String) = {
-    val trimmedCmd = cmd.trim
-    if (trimmedCmd.equals(":q")) {
-      (-1, "Bye Bye")
-    } else if (trimmedCmd.equals(":h")) {
-      (0, helpMessage)
-    } else {
-      val x: ParseResult[Lambda] = parseAll(sexpr, trimmedCmd)
+    cmd.trim match {
+      case ":q"         => (-1, "Bye Bye")
+      case ":h"         => ( 0, helpMessage)
+      case trimmedCmd =>
+        val x: ParseResult[Sexpr] = parseAll(sexpr, trimmedCmd)
 
-      val msg = if (x.successful)
-        x.get.eval(EmptyEnvironment).asString
-      else
-        "Parser error"
+        val msg = if (x.successful)
+          x.get.eval(EmptyEnvironment)._1.asString
+        else
+          "Parser error"
 
-      (0, msg)
+        (0, msg)
     }
   }
 
